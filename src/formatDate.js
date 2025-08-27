@@ -8,91 +8,29 @@
  * @returns {string}
  */
 function formatDate(date, fromFormat, toFormat) {
-  let dateArray = date.split(fromFormat[3]);
+  const dateObject = {};
+  const dateArray = date.split(fromFormat[3]);
+  const parts = [];
 
-  switch (fromFormat[0]) {
-    case 'YYYY':
-    case 'YY':
-      dateArray.reverse();
-      break;
-    case 'MM':
-      if (fromFormat[1] === 'DD') {
-        dateArray = [dateArray[1], dateArray[0], dateArray[2]];
-      } else {
-        dateArray = [dateArray[2], dateArray[0], dateArray[1]];
-      }
-      break;
-    default:
-      break;
+  for (let i = 0; i < 3; i++) {
+    dateObject[fromFormat[i]] = dateArray[i];
   }
 
-  switch (toFormat[0]) {
-    case 'DD':
-      switch (toFormat[2]) {
-        case 'YY':
-          if (fromFormat.includes('YYYY')) {
-            dateArray[2] = dateArray[2].slice(2);
-          }
-
-          return dateArray.join(toFormat[3]);
-        case 'YYYY':
-          if (fromFormat.includes('YY')) {
-            if (+dateArray[2] < 30) {
-              dateArray[2] = '20' + dateArray[2];
-            } else {
-              dateArray[2] = '19' + dateArray[2];
-            }
-          }
-
-          return dateArray.join(toFormat[3]);
-        default:
-          break;
-      }
-      break;
-    case 'YY':
-      if (fromFormat.includes('YY')) {
-        if (+dateArray[2] < 30) {
-          dateArray[2] = '20' + dateArray[2];
-        } else {
-          dateArray[2] = '19' + dateArray[2];
-        }
-      } else {
-        dateArray[2] = dateArray[2].slice(2);
-      }
-
-      return dateArray.reverse().join(toFormat[3]);
-    case 'YYYY':
-      if (fromFormat.includes('YY')) {
-        if (+dateArray[2] < 30) {
-          dateArray[2] = '20' + dateArray[2];
-        } else {
-          dateArray[2] = '19' + dateArray[2];
-        }
-      }
-
-      return dateArray.reverse().join(toFormat[3]);
-
-    case 'MM':
-      if (fromFormat.includes('YY')) {
-        if (+dateArray[2] < 30) {
-          dateArray[2] = '20' + dateArray[2];
-        } else {
-          dateArray[2] = '19' + dateArray[2];
-        }
-      } else {
-        dateArray[2] = dateArray[2].slice(2);
-      }
-
-      if (toFormat[1] === 'DD') {
-        dateArray = [dateArray[1], dateArray[0], dateArray[2]];
-      } else {
-        dateArray = [dateArray[2], dateArray[0], dateArray[1]];
-      }
-
-      return dateArray.join(toFormat[3]);
-    default:
-      break;
+  if (toFormat.includes('YY') && fromFormat.includes('YYYY')) {
+    dateObject['YY'] = dateObject['YYYY'].slice(2);
+  } else if (toFormat.includes('YYYY') && fromFormat.includes('YY')) {
+    if (+dateObject['YY'] < 30) {
+      dateObject['YYYY'] = '20' + dateObject['YY'];
+    } else {
+      dateObject['YYYY'] = '19' + dateObject['YY'];
+    }
   }
+
+  for (let i = 0; i < 3; i++) {
+    parts.push(dateObject[toFormat[i]]);
+  }
+
+  return parts.join(toFormat[3]);
 }
 
 module.exports = formatDate;
